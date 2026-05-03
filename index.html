@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>経穴フラッシュカード v2</title>
+<title>手の太陰肺経 経穴フラッシュカード</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -19,6 +19,8 @@
     --blue-light: #e8eff5;
     --muted: #7a7468;
     --line: rgba(26,26,24,0.12);
+    --lung: #6b4a7a;
+    --lung-light: #f0ebf5;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -50,42 +52,61 @@
 
   /* ヘッダー */
   header {
-    padding: 32px 0 24px;
+    padding: 28px 0 20px;
     border-bottom: 1px solid var(--line);
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+  }
+
+  .header-inner {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
   }
 
+  .title-block {}
   .title-jp {
     font-family: 'Noto Serif JP', serif;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
   }
 
-  .title-en {
-    font-family: 'DM Serif Display', serif;
-    font-size: 12px;
+  .title-sub {
+    font-size: 11px;
     color: var(--muted);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     margin-top: 3px;
   }
 
-  .version-badge {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--gold);
-    border: 1px solid var(--gold);
-    padding: 3px 8px;
+  .meridian-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--lung-light);
+    border: 1px solid var(--lung);
+    border-left: 3px solid var(--lung);
+  }
+
+  .meridian-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lung);
+  }
+
+  .meridian-badge-text {
+    font-size: 11px;
+    color: var(--lung);
+    letter-spacing: 0.12em;
+    font-weight: 500;
   }
 
   /* モードタブ */
   .mode-tabs {
     display: flex;
     border-bottom: 1px solid var(--line);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .mode-tab {
@@ -104,40 +125,71 @@
 
   .mode-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
 
-  /* 経絡セレクター */
-  .meridian-select {
-    display: flex;
+  /* 経穴リスト（サムネイル） */
+  .point-list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     gap: 6px;
-    flex-wrap: wrap;
     margin-bottom: 20px;
   }
 
-  .meridian-btn {
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 11px;
-    padding: 5px 12px;
+  .point-thumb {
+    padding: 6px 4px;
     border: 1px solid var(--line);
-    background: transparent;
-    color: var(--muted);
+    background: #fff;
+    text-align: center;
     cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.2s;
-    letter-spacing: 0.05em;
+    transition: all 0.18s;
   }
 
-  .meridian-btn:hover { border-color: var(--moss); color: var(--moss); }
-  .meridian-btn.active { background: var(--moss); border-color: var(--moss); color: #fff; }
+  .point-thumb:hover { border-color: var(--lung); }
+
+  .point-thumb.active {
+    background: var(--lung);
+    border-color: var(--lung);
+  }
+
+  .point-thumb.done {
+    background: var(--moss);
+    border-color: var(--moss);
+  }
+
+  .point-thumb.again {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .thumb-code {
+    font-family: 'DM Serif Display', serif;
+    font-size: 9px;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .point-thumb.active .thumb-code,
+  .point-thumb.done .thumb-code,
+  .point-thumb.again .thumb-code { color: rgba(255,255,255,0.7); }
+
+  .thumb-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .point-thumb.active .thumb-name,
+  .point-thumb.done .thumb-name,
+  .point-thumb.again .thumb-name { color: #fff; }
 
   /* スタッツ */
   .stats-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .stat-box {
-    padding: 12px;
+    padding: 10px 8px;
     border: 1px solid var(--line);
     background: #fff;
     text-align: center;
@@ -145,17 +197,19 @@
 
   .stat-num {
     font-family: 'DM Serif Display', serif;
-    font-size: 24px;
+    font-size: 22px;
     color: var(--ink);
     line-height: 1;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
 
-  .stat-label { font-size: 10px; color: var(--muted); letter-spacing: 0.15em; }
-  .stat-box.highlight .stat-num { color: var(--moss); }
+  .stat-label { font-size: 9px; color: var(--muted); letter-spacing: 0.12em; }
+  .stat-box.s-total .stat-num { color: var(--lung); }
+  .stat-box.s-good .stat-num { color: var(--moss); }
+  .stat-box.s-again .stat-num { color: var(--red); }
 
   /* 進捗 */
-  .progress-wrap { margin-bottom: 24px; }
+  .progress-wrap { margin-bottom: 22px; }
 
   .progress-labels {
     display: flex;
@@ -163,14 +217,13 @@
     font-size: 11px;
     color: var(--muted);
     margin-bottom: 5px;
-    letter-spacing: 0.05em;
   }
 
   .progress-bar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--moss), var(--gold));
+    background: linear-gradient(90deg, var(--lung), var(--gold));
     border-radius: 2px;
     transition: width 0.5s ease;
   }
@@ -178,13 +231,13 @@
   /* ========== カード ========== */
   .card-stage {
     perspective: 1200px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .card {
     position: relative;
     width: 100%;
-    min-height: 520px;
+    min-height: 500px;
     cursor: pointer;
     transform-style: preserve-3d;
     transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
@@ -208,34 +261,34 @@
 
   /* 前面 */
   .front-body {
-    padding: 40px 36px 32px;
+    padding: 36px 32px 28px;
     flex: 1;
     display: flex;
     flex-direction: column;
   }
 
   .card-meridian {
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.2em;
-    color: var(--moss);
-    margin-bottom: 6px;
+    color: var(--lung);
+    margin-bottom: 4px;
   }
 
   .card-code {
     font-family: 'DM Serif Display', serif;
     font-size: 13px;
     color: var(--muted);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   .card-name-main {
     font-family: 'Noto Serif JP', serif;
-    font-size: 56px;
+    font-size: 60px;
     font-weight: 300;
     letter-spacing: 0.15em;
     color: var(--ink);
     line-height: 1;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .card-name-reading {
@@ -245,40 +298,56 @@
     margin-bottom: auto;
   }
 
+  /* 五行・穴性バッジ */
+  .card-badges {
+    display: flex;
+    gap: 6px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+  }
+
+  .badge-go { background: var(--lung-light); color: var(--lung); border: 1px solid var(--lung); }
+  .badge-special { background: #fff8e8; color: var(--gold); border: 1px solid var(--gold); }
+  .badge-exam { background: var(--red); color: #fff; }
+  .badge-caution { background: #fff0f0; color: var(--red); border: 1px solid var(--red); }
+
   .front-quick {
-    margin-top: 28px;
-    padding-top: 20px;
+    margin-top: 20px;
+    padding-top: 18px;
     border-top: 1px solid var(--line);
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .quick-item {}
   .quick-label {
     font-size: 9px;
     letter-spacing: 0.2em;
     color: var(--gold);
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
 
-  .quick-val {
-    font-size: 12px;
-    color: var(--ink);
-    line-height: 1.6;
-  }
+  .quick-val { font-size: 12px; color: var(--ink); line-height: 1.5; }
 
   .card-hint {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     font-size: 10px;
     color: var(--muted);
-    padding: 12px 36px;
+    padding: 10px;
     border-top: 1px solid var(--line);
-    letter-spacing: 0.1em;
     background: var(--paper);
+    letter-spacing: 0.1em;
   }
 
   /* 背面タブ */
@@ -291,7 +360,7 @@
   .back-tab {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 11px;
-    padding: 10px 16px;
+    padding: 10px 0;
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
@@ -304,14 +373,13 @@
     text-align: center;
   }
 
-  .back-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+  .back-tab.active { color: var(--ink); border-bottom-color: var(--lung); }
 
-  .back-panels { flex: 1; overflow: hidden; }
+  .back-panels { flex: 1; overflow-y: auto; }
 
   .back-panel {
     display: none;
-    padding: 24px 28px;
-    height: 100%;
+    padding: 22px 26px;
     animation: fadeIn 0.2s ease;
   }
 
@@ -319,68 +387,41 @@
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  /* 基本情報パネル */
-  .info-row {
-    margin-bottom: 18px;
-  }
+  /* 基本情報 */
+  .info-row { margin-bottom: 16px; }
 
   .info-label {
     font-size: 9px;
     letter-spacing: 0.25em;
     color: var(--gold);
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
 
   .info-content {
     font-family: 'Noto Serif JP', serif;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.85;
     color: var(--ink);
   }
 
-  .effect-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 6px;
-  }
+  .effect-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
 
   .tag {
     font-size: 11px;
-    padding: 3px 10px;
+    padding: 2px 9px;
     border: 1px solid var(--moss-light);
     color: var(--moss);
     border-radius: 20px;
-    letter-spacing: 0.03em;
   }
 
-  .exam-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: var(--red);
-    color: #fff;
-    font-size: 10px;
-    padding: 3px 9px;
-    border-radius: 2px;
-    letter-spacing: 0.08em;
-    margin-top: 6px;
-  }
+  .divider-h { width: 24px; height: 1px; background: var(--line); margin: 12px 0; }
 
-  .exam-dot { width: 4px; height: 4px; background: var(--gold-light); border-radius: 50%; }
-
-  .divider-h { width: 28px; height: 1px; background: var(--line); margin: 14px 0; }
-
-  /* 解剖パネル */
-  .anatomy-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+  /* 解剖 */
+  .anatomy-grid { display: flex; flex-direction: column; gap: 12px; }
 
   .anatomy-card {
-    padding: 14px 16px;
+    padding: 12px 14px;
     border: 1px solid var(--line);
     background: #fff;
   }
@@ -388,9 +429,8 @@
   .anatomy-card-label {
     font-size: 9px;
     letter-spacing: 0.2em;
-    color: var(--blue);
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -400,15 +440,16 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--blue-light);
+    background: currentColor;
+    opacity: 0.15;
   }
 
   .anatomy-item {
     display: flex;
-    gap: 8px;
-    margin-bottom: 6px;
+    gap: 7px;
+    margin-bottom: 5px;
     align-items: flex-start;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.6;
   }
 
@@ -418,76 +459,54 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--blue);
     flex-shrink: 0;
-    margin-top: 7px;
+    margin-top: 6px;
   }
 
-  .anatomy-item-text { color: var(--ink); }
   .anatomy-item-sub { color: var(--muted); font-size: 11px; }
 
-  /* 取穴パネル */
-  .howto-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+  /* 取穴 */
+  .howto-steps { display: flex; flex-direction: column; gap: 12px; }
 
-  .howto-step {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
+  .howto-step { display: flex; gap: 12px; align-items: flex-start; }
 
   .step-num {
     font-family: 'DM Serif Display', serif;
-    font-size: 20px;
+    font-size: 18px;
     color: var(--gold);
     line-height: 1;
     flex-shrink: 0;
-    width: 24px;
+    width: 22px;
   }
-
-  .step-body {}
 
   .step-label {
     font-size: 9px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     color: var(--muted);
     text-transform: uppercase;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
 
   .step-text {
     font-family: 'Noto Serif JP', serif;
     font-size: 13px;
-    line-height: 1.8;
+    line-height: 1.75;
     color: var(--ink);
   }
 
   .needle-info {
-    margin-top: 16px;
-    padding: 12px 14px;
+    margin-top: 14px;
+    padding: 10px 13px;
     background: #fff;
     border: 1px solid var(--line);
     border-left: 3px solid var(--gold);
   }
 
-  .needle-label {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    margin-bottom: 6px;
-  }
-
-  .needle-text {
-    font-size: 12px;
-    color: var(--ink);
-    line-height: 1.7;
-  }
+  .needle-label { font-size: 9px; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 4px; }
+  .needle-text { font-size: 12px; color: var(--ink); line-height: 1.6; }
 
   .caution-box {
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 8px 12px;
     background: #fff5f5;
     border: 1px solid #e8c8c8;
@@ -501,24 +520,20 @@
   .actions {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 7px;
+    margin-bottom: 14px;
   }
 
   .action-btn {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 12px;
-    padding: 12px 8px;
+    padding: 11px 8px;
     border: 1px solid var(--line);
     background: #fff;
     cursor: pointer;
     letter-spacing: 0.08em;
     transition: all 0.18s;
     color: var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
   }
 
   .action-btn:hover { background: var(--paper-dark); }
@@ -532,13 +547,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
   }
 
   .nav-btn {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 12px;
-    padding: 10px 24px;
+    padding: 9px 22px;
     border: 1px solid var(--line);
     background: transparent;
     cursor: pointer;
@@ -548,12 +563,14 @@
   }
 
   .nav-btn:hover { background: var(--ink); color: var(--paper); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn:disabled:hover { background: transparent; color: var(--ink); }
 
   .card-counter {
     font-family: 'DM Serif Display', serif;
     font-size: 14px;
     color: var(--muted);
-    min-width: 56px;
+    min-width: 50px;
     text-align: center;
   }
 
@@ -565,35 +582,42 @@
   .question-box {
     border: 1px solid var(--line);
     background: #fff;
-    padding: 28px;
+    padding: 26px;
     margin-bottom: 12px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.05);
   }
 
-  .question-year { font-size: 10px; letter-spacing: 0.2em; color: var(--red); margin-bottom: 10px; }
+  .question-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .question-year { font-size: 10px; letter-spacing: 0.2em; color: var(--red); }
+  .question-related { font-size: 10px; color: var(--lung); letter-spacing: 0.08em; }
 
   .question-text {
     font-family: 'Noto Serif JP', serif;
     font-size: 15px;
     line-height: 1.9;
     color: var(--ink);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
-  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choices { display: flex; flex-direction: column; gap: 7px; }
 
   .choice-btn {
     text-align: left;
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 13px;
-    padding: 12px 16px;
+    padding: 11px 14px;
     border: 1px solid var(--line);
     background: transparent;
     cursor: pointer;
     color: var(--ink);
     line-height: 1.6;
     transition: all 0.18s;
-    letter-spacing: 0.03em;
   }
 
   .choice-btn:hover { background: var(--paper-dark); }
@@ -602,11 +626,10 @@
 
   .quiz-result {
     display: none;
-    padding: 14px 18px;
+    padding: 12px 16px;
     font-size: 13px;
     line-height: 1.8;
-    letter-spacing: 0.04em;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .quiz-result.show { display: block; }
@@ -615,17 +638,16 @@
 
   /* アフィリエイト */
   .affiliate-bar {
-    margin-top: 40px;
-    padding: 18px 22px;
+    margin-top: 36px;
+    padding: 16px 20px;
     border: 1px solid var(--gold);
     background: linear-gradient(135deg, #fdf8f0, #fff);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
   }
 
-  .affiliate-icon { font-size: 26px; flex-shrink: 0; }
-
+  .affiliate-icon { font-size: 24px; flex-shrink: 0; }
   .affiliate-text { flex: 1; }
 
   .affiliate-title {
@@ -636,12 +658,12 @@
     margin-bottom: 2px;
   }
 
-  .affiliate-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; line-height: 1.5; }
+  .affiliate-sub { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
   .affiliate-btn {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 11px;
-    padding: 8px 14px;
+    padding: 7px 13px;
     background: var(--gold);
     color: #fff;
     border: none;
@@ -655,24 +677,28 @@
 
   .affiliate-btn:hover { background: var(--gold-light); }
 
-  /* アニメ */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .card-stage { animation: fadeUp 0.35s ease both; }
+  .card-stage { animation: fadeUp 0.3s ease both; }
 </style>
 </head>
 <body>
 <div class="app">
 
   <header>
-    <div>
-      <div class="title-jp">経穴フラッシュカード</div>
-      <div class="title-en">Acupoint Flashcard</div>
+    <div class="header-inner">
+      <div class="title-block">
+        <div class="title-jp">手の太陰肺経 · 経穴フラッシュカード</div>
+        <div class="title-sub">LU-1〜LU-11 全11穴 · 解剖学的取穴法収録</div>
+      </div>
+      <div class="meridian-badge">
+        <div class="meridian-badge-dot"></div>
+        <div class="meridian-badge-text">肺経 · Lung</div>
+      </div>
     </div>
-    <div class="version-badge">v2 · 解剖情報追加</div>
   </header>
 
   <div class="mode-tabs">
@@ -680,30 +706,24 @@
     <button class="mode-tab" onclick="switchMode('quiz')">国試過去問</button>
   </div>
 
-  <!-- 経絡フィルター -->
-  <div class="meridian-select" id="meridianSelect">
-    <button class="meridian-btn active" onclick="selectMeridian('all', this)">すべて</button>
-    <button class="meridian-btn" onclick="selectMeridian('LU', this)">肺経</button>
-    <button class="meridian-btn" onclick="selectMeridian('LI', this)">大腸経</button>
-    <button class="meridian-btn" onclick="selectMeridian('ST', this)">胃経</button>
-    <button class="meridian-btn" onclick="selectMeridian('SP', this)">脾経</button>
-    <button class="meridian-btn" onclick="selectMeridian('HT', this)">心経</button>
-    <button class="meridian-btn" onclick="selectMeridian('BL', this)">膀胱経</button>
-    <button class="meridian-btn" onclick="selectMeridian('KI', this)">腎経</button>
-    <button class="meridian-btn" onclick="selectMeridian('GB', this)">胆経</button>
-  </div>
+  <!-- 経穴サムネイル -->
+  <div class="point-list" id="pointList"></div>
 
   <!-- スタッツ -->
   <div class="stats-row">
-    <div class="stat-box highlight">
-      <div class="stat-num" id="statRemaining">10</div>
-      <div class="stat-label">残り</div>
+    <div class="stat-box s-total">
+      <div class="stat-num" id="statTotal">11</div>
+      <div class="stat-label">全穴数</div>
     </div>
     <div class="stat-box">
+      <div class="stat-num" id="statRemaining">11</div>
+      <div class="stat-label">残り</div>
+    </div>
+    <div class="stat-box s-good">
       <div class="stat-num" id="statGood">0</div>
       <div class="stat-label">覚えた</div>
     </div>
-    <div class="stat-box">
+    <div class="stat-box s-again">
       <div class="stat-num" id="statAgain">0</div>
       <div class="stat-label">要復習</div>
     </div>
@@ -712,7 +732,7 @@
   <!-- 進捗 -->
   <div class="progress-wrap">
     <div class="progress-labels">
-      <span id="progressText">0 / 10</span>
+      <span id="progressText">0 / 11</span>
       <span id="progressPct">0%</span>
     </div>
     <div class="progress-bar">
@@ -728,16 +748,17 @@
         <!-- 前面 -->
         <div class="card-face card-front">
           <div class="front-body">
-            <div class="card-meridian" id="cardMeridian">肺経 · Lung Meridian</div>
+            <div class="card-meridian" id="cardMeridian">手の太陰肺経</div>
             <div class="card-code" id="cardCode">LU-1</div>
             <div class="card-name-main" id="cardName">中府</div>
             <div class="card-name-reading" id="cardReading">ちゅうふ</div>
-            <div class="front-quick" id="frontQuick">
-              <div class="quick-item">
+            <div class="card-badges" id="cardBadges"></div>
+            <div class="front-quick">
+              <div>
                 <div class="quick-label">部位（概要）</div>
                 <div class="quick-val" id="quickLocation">—</div>
               </div>
-              <div class="quick-item">
+              <div>
                 <div class="quick-label">主な主治</div>
                 <div class="quick-val" id="quickEffects">—</div>
               </div>
@@ -754,8 +775,6 @@
             <button class="back-tab" onclick="switchBackTab('howto', this)">取穴方法</button>
           </div>
           <div class="back-panels">
-
-            <!-- 基本情報 -->
             <div class="back-panel visible" id="panel-basic">
               <div class="info-row">
                 <div class="info-label">部位（詳細）</div>
@@ -773,43 +792,40 @@
               </div>
               <div id="examBadgeWrap"></div>
             </div>
-
-            <!-- 解剖 -->
             <div class="back-panel" id="panel-anatomy">
               <div class="anatomy-grid" id="anatomyGrid"></div>
             </div>
-
-            <!-- 取穴方法 -->
             <div class="back-panel" id="panel-howto">
               <div class="howto-steps" id="howtoSteps"></div>
               <div id="needleInfo"></div>
               <div id="cautionBox"></div>
             </div>
-
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- 回答ボタン -->
     <div class="actions" id="actionBtns" style="display:none;">
       <button class="action-btn again" onclick="answerCard('again')">✕ もう一度</button>
       <button class="action-btn" onclick="answerCard('hard')">△ あいまい</button>
       <button class="action-btn good" onclick="answerCard('good')">○ 覚えた</button>
     </div>
 
-    <!-- ナビ -->
     <div class="nav-row">
-      <button class="nav-btn" onclick="prevCard()">← 前へ</button>
-      <div class="card-counter" id="cardCounter">1 / 10</div>
-      <button class="nav-btn" onclick="nextCard()">次へ →</button>
+      <button class="nav-btn" id="btnPrev" onclick="prevCard()">← 前へ</button>
+      <div class="card-counter" id="cardCounter">1 / 11</div>
+      <button class="nav-btn" id="btnNext" onclick="nextCard()">次へ →</button>
     </div>
   </div>
 
   <!-- 国試過去問 -->
   <div class="quiz-section" id="quizSection">
     <div class="question-box">
-      <div class="question-year" id="qYear"></div>
+      <div class="question-meta">
+        <div class="question-year" id="qYear"></div>
+        <div class="question-related" id="qRelated"></div>
+      </div>
       <div class="question-text" id="qText"></div>
       <div class="choices" id="qChoices"></div>
     </div>
@@ -819,14 +835,13 @@
     </div>
   </div>
 
-  <!-- アフィリエイト -->
   <div class="affiliate-bar">
     <div class="affiliate-icon">📖</div>
     <div class="affiliate-text">
       <div class="affiliate-title">ツボ単 ── 経穴取穴法・現代医学解説付き</div>
       <div class="affiliate-sub">解剖学的取穴法・筋・神経・血管まで網羅。国試にも臨床にも。</div>
     </div>
-    <a class="affiliate-btn" href="#" onclick="alert('アフィリエイトリンクをここに設置')">Amazon で見る</a>
+    <a class="affiliate-btn" href="https://amzn.to/4dlDrlb" target="_blank" rel="noopener">Amazon で見る</a>
   </div>
 
 </div>
@@ -835,407 +850,301 @@
 const ACUPOINTS = [
   {
     id: "LU1", code: "LU-1", name: "中府", reading: "ちゅうふ",
-    meridian: "肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
     location: "前胸部、鎖骨下窩の外方、烏口突起の内側縁、前正中線の外方6寸",
     locationShort: "前胸部・鎖骨下窩の外方",
     effects: ["咳", "喘息", "胸痛", "肩こり", "肺気逆"],
     effectsShort: "咳・喘息・胸痛",
-    special: "肺の募穴。肺気を調整し、宣降機能を回復する。肺・脾の交会穴。",
+    special: "肺の募穴。肺・脾の交会穴。肺気を調整し宣降機能を回復する。",
+    badges: ["募穴", "交会穴"],
     examYears: ["第31回"],
     anatomy: {
-      muscles: [
-        { name: "大胸筋", detail: "（鎖骨部・胸肋部）" },
-        { name: "小胸筋", detail: "（深層）" },
-        { name: "鎖骨下筋", detail: "（鎖骨直下）" }
-      ],
-      nerves: [
-        { name: "内側胸筋神経", detail: "（C8〜T1）" },
-        { name: "外側胸筋神経", detail: "（C5〜C7）" }
-      ],
-      vessels: [
-        { name: "胸肩峰動脈", detail: "（三角筋枝・胸筋枝）" },
-        { name: "外側胸動脈", detail: "" }
-      ]
+      muscles: [{ name: "大胸筋", detail: "（鎖骨部・胸肋部）" }, { name: "小胸筋", detail: "（深層）" }, { name: "鎖骨下筋", detail: "（鎖骨直下）" }],
+      nerves: [{ name: "内側胸筋神経", detail: "（C8〜T1）" }, { name: "外側胸筋神経", detail: "（C5〜C7）" }],
+      vessels: [{ name: "胸肩峰動脈", detail: "（三角筋枝・胸筋枝）" }, { name: "外側胸動脈", detail: "" }]
     },
     howto: {
       posture: "仰臥位または座位。腕を体側に自然に下ろした状態で取穴する。",
-      landmark: "鎖骨外端の下方にある鎖骨下窩を触知する。次に烏口突起の内側縁を確認し、前正中線の外方6寸の位置を定める。",
-      steps: [
-        "鎖骨の外端（肩鎖関節）から指1〜2本分内側に移動する",
-        "鎖骨の直下（鎖骨下窩）に指を置く",
-        "烏口突起の内側縁を触れながら、前正中線から外方6寸の位置を確認する",
-        "押圧して圧痛・響きのある点を取穴点とする"
-      ],
-      needle: "直刺0.3〜0.5寸。または内下方に向けて斜刺0.5〜0.8寸。",
-      caution: "深刺禁忌。肺尖に近接しているため、深く刺すと気胸のリスクがある。"
+      landmark: "鎖骨外端（肩鎖関節）と烏口突起を触知する。",
+      steps: ["鎖骨の外端から内側へ指を移動し、鎖骨下窩を確認する", "烏口突起の内側縁を触れる", "前正中線から外方6寸の位置を確認する", "押圧して圧痛・響きのある点を取穴点とする"],
+      needle: "直刺0.3〜0.5寸。または内下方へ斜刺0.5〜0.8寸。",
+      caution: "深刺禁忌。肺尖に近接しているため気胸のリスクあり。"
+    }
+  },
+  {
+    id: "LU2", code: "LU-2", name: "雲門", reading: "うんもん",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "前胸部、鎖骨下窩、烏口突起の内側縁、前正中線の外方6寸、中府の上方1寸",
+    locationShort: "鎖骨下窩・中府の上方1寸",
+    effects: ["咳", "喘息", "胸部膨満感", "肩・上肢の疼痛"],
+    effectsShort: "咳・喘息・胸部膨満",
+    special: "肺気の出入り口。中府の上方1寸に位置する。",
+    badges: [],
+    examYears: [],
+    anatomy: {
+      muscles: [{ name: "大胸筋", detail: "（鎖骨部）" }, { name: "三角筋", detail: "（前部）" }],
+      nerves: [{ name: "外側胸筋神経", detail: "（C5〜C7）" }, { name: "鎖骨上神経", detail: "" }],
+      vessels: [{ name: "胸肩峰動脈", detail: "（鎖骨枝）" }, { name: "頭静脈", detail: "（外側）" }]
+    },
+    howto: {
+      posture: "仰臥位または座位。腕を自然に下ろした状態。",
+      landmark: "中府（LU-1）を先に確認し、そこから上方1寸の位置を取る。",
+      steps: ["中府（LU-1）を先に取穴する", "中府から上方1寸（母指横幅1本分）の位置に移動する", "鎖骨下縁に沿って押圧し、陥凹部を確認する", "圧痛のある点を取穴点とする"],
+      needle: "直刺0.3〜0.5寸。または斜刺0.5〜0.8寸。",
+      caution: "深刺禁忌。中府同様、肺尖に近接しているため気胸のリスクあり。"
+    }
+  },
+  {
+    id: "LU3", code: "LU-3", name: "天府", reading: "てんぷ",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "上腕前外側、上腕二頭筋の橈側縁、腋窩横紋前端の下方3寸",
+    locationShort: "上腕前外側・腋窩横紋下方3寸",
+    effects: ["喘息", "鼻出血", "上腕部疼痛", "精神不安"],
+    effectsShort: "喘息・鼻出血・上腕痛",
+    special: "天（上部）の気を調整する。鼻血・精神症状にも用いる。",
+    badges: [],
+    examYears: [],
+    anatomy: {
+      muscles: [{ name: "上腕二頭筋", detail: "（長頭・短頭）" }, { name: "烏口腕筋", detail: "（内側深層）" }],
+      nerves: [{ name: "筋皮神経", detail: "（C5〜C7）" }, { name: "外側上腕皮神経", detail: "" }],
+      vessels: [{ name: "上腕動脈", detail: "（内側）" }, { name: "頭静脈", detail: "（橈側）" }]
+    },
+    howto: {
+      posture: "座位または仰臥位。腕を外転・回外位にする。",
+      landmark: "腋窩横紋の前端を確認する。",
+      steps: ["腋窩（わきの下）の横紋の前端を触知する", "そこから下方3寸（4横指）の位置に移動する", "上腕二頭筋の橈側縁（外側縁）を触れる", "筋の縁に沿って圧痛点を確認する"],
+      needle: "直刺0.5〜1.0寸。",
+      caution: null
+    }
+  },
+  {
+    id: "LU4", code: "LU-4", name: "侠白", reading: "きょうはく",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "上腕前外側、上腕二頭筋の橈側縁、腋窩横紋前端の下方4寸",
+    locationShort: "上腕前外側・腋窩横紋下方4寸",
+    effects: ["咳", "上腕部疼痛", "胸部苦悶感", "動悸"],
+    effectsShort: "咳・上腕痛・胸部苦悶",
+    special: "天府の下方1寸。肺気を宣通し胸の苦悶を除く。",
+    badges: [],
+    examYears: [],
+    anatomy: {
+      muscles: [{ name: "上腕二頭筋", detail: "（橈側縁）" }, { name: "上腕筋", detail: "（深層）" }],
+      nerves: [{ name: "筋皮神経", detail: "（C5〜C7）" }, { name: "外側上腕皮神経", detail: "" }],
+      vessels: [{ name: "上腕動脈", detail: "（内側）" }, { name: "頭静脈", detail: "（橈側）" }]
+    },
+    howto: {
+      posture: "座位または仰臥位。腕を外転・回外位にする。",
+      landmark: "天府（LU-3）を先に確認する。",
+      steps: ["天府（LU-3）を取穴する", "天府から下方1寸の位置に移動する", "上腕二頭筋の橈側縁上を確認する", "押圧で圧痛のある点を取穴点とする"],
+      needle: "直刺0.5〜1.0寸。",
+      caution: null
+    }
+  },
+  {
+    id: "LU5", code: "LU-5", name: "尺沢", reading: "しゃくたく",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "肘前外側、肘窩横紋上、上腕二頭筋腱の橈側縁の陥凹部",
+    locationShort: "肘窩横紋・上腕二頭筋腱の橈側",
+    effects: ["咳", "喘息", "喀血", "肘関節痛", "小児疳虫"],
+    effectsShort: "咳・喘息・喀血・肘痛",
+    special: "肺経の合穴（水）。肺熱を清し、気逆を降ろす。",
+    badges: ["合穴（水）"],
+    examYears: ["第29回", "第32回"],
+    anatomy: {
+      muscles: [{ name: "上腕二頭筋腱", detail: "（内側に隣接）" }, { name: "腕橈骨筋", detail: "（橈側）" }, { name: "回外筋", detail: "（深層）" }],
+      nerves: [{ name: "橈骨神経", detail: "（外側・浅枝）" }, { name: "外側前腕皮神経", detail: "" }],
+      vessels: [{ name: "橈側反回動脈", detail: "" }, { name: "頭静脈", detail: "（橈側）" }]
+    },
+    howto: {
+      posture: "肘を軽度屈曲し、前腕を回外位（手掌上向き）にする。",
+      landmark: "肘窩横紋上で上腕二頭筋腱を触知する。",
+      steps: ["肘を軽く曲げて上腕二頭筋腱（硬い腱）を確認する", "その腱の橈側縁（外側）に指を当てる", "肘窩横紋上の陥凹部を確認する", "押圧で前腕への響きが出ることがある"],
+      needle: "直刺0.8〜1.2寸。または三稜針で刺絡療法。",
+      caution: "上腕動脈・正中神経が近接。深刺・乱刺注意。"
+    }
+  },
+  {
+    id: "LU6", code: "LU-6", name: "孔最", reading: "こうさい",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "前腕前橈側、橈骨前縁、尺沢と太淵を結ぶ線上、尺沢の下方7寸",
+    locationShort: "前腕橈側・尺沢下方7寸",
+    effects: ["喀血", "咳", "喘息", "咽頭痛", "痔疾患"],
+    effectsShort: "喀血・咳・咽頭痛・痔",
+    special: "肺経の郄穴。急性・疼痛疾患に用いる。止血・発汗の要穴。",
+    badges: ["郄穴"],
+    examYears: ["第30回", "第33回"],
+    anatomy: {
+      muscles: [{ name: "長母指屈筋", detail: "（橈側）" }, { name: "円回内筋", detail: "（尺側）" }, { name: "浅指屈筋", detail: "（深層）" }],
+      nerves: [{ name: "正中神経（前骨間神経）", detail: "" }, { name: "外側前腕皮神経", detail: "" }],
+      vessels: [{ name: "橈骨動脈", detail: "（橈側）" }, { name: "橈側皮静脈", detail: "" }]
+    },
+    howto: {
+      posture: "前腕を回外位（手掌上向き）で安定させる。",
+      landmark: "尺沢（LU-5）と太淵（LU-9）を先に確認する。",
+      steps: ["尺沢（LU-5）と太淵（LU-9）を結ぶ線を想定する", "尺沢から下方7寸の位置を測る（太淵から上方5寸）", "橈骨前縁に沿って前腕橈側の筋間を確認する", "押圧で圧痛の強い点を取穴点とする（郄穴のため圧痛が強い）"],
+      needle: "直刺0.5〜1.0寸。",
+      caution: null
     }
   },
   {
     id: "LU7", code: "LU-7", name: "列缺", reading: "れっけつ",
-    meridian: "肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
     location: "前腕橈側、橈骨茎状突起の近位1.5寸、長母指外転筋腱と短母指伸筋腱の間の陥凹部",
     locationShort: "前腕橈側・茎状突起近位1.5寸",
     effects: ["咳", "頭痛", "頸部こわばり", "偏頭痛", "手関節痛"],
     effectsShort: "咳・頭痛・頸部こわばり",
-    special: "肺経の絡穴・八脈交会穴（任脈と通ず）。外感風邪の要穴。",
+    special: "肺経の絡穴・八脈交会穴（任脈）。四総穴（頭項列缺尋）。外感風邪の要穴。",
+    badges: ["絡穴", "八脈交会穴", "四総穴"],
     examYears: ["第28回", "第30回"],
     anatomy: {
-      muscles: [
-        { name: "長母指外転筋腱", detail: "（橈側）" },
-        { name: "短母指伸筋腱", detail: "（尺側）" },
-        { name: "腕橈骨筋", detail: "（深層）" }
-      ],
-      nerves: [
-        { name: "橈骨神経浅枝", detail: "（知覚枝）" },
-        { name: "外側前腕皮神経", detail: "" }
-      ],
-      vessels: [
-        { name: "橈骨動脈", detail: "（橈側）" },
-        { name: "橈側皮静脈", detail: "" }
-      ]
+      muscles: [{ name: "長母指外転筋腱", detail: "（橈側）" }, { name: "短母指伸筋腱", detail: "（尺側）" }, { name: "腕橈骨筋", detail: "（深層）" }],
+      nerves: [{ name: "橈骨神経浅枝", detail: "（知覚枝）" }, { name: "外側前腕皮神経", detail: "" }],
+      vessels: [{ name: "橈骨動脈", detail: "（橈側）" }, { name: "橈側皮静脈", detail: "" }]
     },
     howto: {
       posture: "前腕を軽度回外・軽度屈曲位で安定させる。",
-      landmark: "橈骨茎状突起（手首の橈側の骨突出）を触知する。",
-      steps: [
-        "橈骨茎状突起の頂点を確認する",
-        "その近位1.5寸（約3横指）の位置に移動する",
-        "長母指外転筋腱と短母指伸筋腱の間の陥凹を触れる",
-        "両腕の示指と母指をL字に組み合わせて取穴する方法（交叉法）も有効"
-      ],
+      landmark: "橈骨茎状突起（手首橈側の骨突出）を触知する。",
+      steps: ["橈骨茎状突起の頂点を確認する", "近位1.5寸（約3横指）の位置に移動する", "長母指外転筋腱と短母指伸筋腱の間の陥凹を触れる", "両手の示指と母指をL字に組み合わせる交叉法も有効"],
       needle: "斜刺（近位方向）0.3〜0.5寸。",
       caution: null
     }
   },
   {
-    id: "LI4", code: "LI-4", name: "合谷", reading: "ごうこく",
-    meridian: "大腸経", meridianEn: "Large Intestine Meridian", meridianCode: "LI",
-    location: "手背、第2中手骨中点の橈側縁",
-    locationShort: "手背・第2中手骨中点",
-    effects: ["頭痛", "歯痛", "顔面痛", "発熱", "鼻詰まり", "分娩促進"],
-    effectsShort: "頭痛・歯痛・発熱",
-    special: "大腸経の原穴。四総穴の一（面口合谷収）。顔面・頭部疾患の代表穴。",
-    examYears: ["第29回", "第31回", "第32回"],
+    id: "LU8", code: "LU-8", name: "経渠", reading: "けいきょ",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "前腕前橈側、橈骨茎状突起と橈骨動脈の間、手関節掌側横紋の上方1寸",
+    locationShort: "手関節横紋上方1寸・橈骨動脈橈側",
+    effects: ["咳", "喘息", "咽頭痛", "胸痛", "手関節痛"],
+    effectsShort: "咳・喘息・咽頭痛",
+    special: "肺経の経穴（金）。五行上の金穴。禁灸穴。",
+    badges: ["経穴（金）", "禁灸"],
+    examYears: ["第31回"],
     anatomy: {
-      muscles: [
-        { name: "第一背側骨間筋", detail: "（母指と示指の間）" },
-        { name: "母指内転筋", detail: "（深層）" }
-      ],
-      nerves: [
-        { name: "橈骨神経浅枝", detail: "（背側指神経）" },
-        { name: "尺骨神経深枝", detail: "（深層）" }
-      ],
-      vessels: [
-        { name: "第一背側中手動脈", detail: "" },
-        { name: "橈骨動脈", detail: "（合谷直下を通過）" }
-      ]
+      muscles: [{ name: "長母指屈筋腱", detail: "（尺側）" }, { name: "腕橈骨筋腱", detail: "（橈側）" }],
+      nerves: [{ name: "橈骨神経浅枝", detail: "" }, { name: "外側前腕皮神経", detail: "" }],
+      vessels: [{ name: "橈骨動脈", detail: "（直上を走行）" }, { name: "橈側皮静脈", detail: "" }]
     },
     howto: {
-      posture: "手背を上にして、軽くこぶしを握った状態で取穴する。",
-      landmark: "第1・第2中手骨の間（虎口）を確認する。",
-      steps: [
-        "片方の手の母指の第一横紋を、もう一方の手の示指と母指の間のくぼみに当てる（簡便法）",
-        "または第2中手骨の橈側縁を示指で辿り、中点付近を圧迫する",
-        "第一背側骨間筋の最も盛り上がった頂点付近が取穴点",
-        "押圧で酸麻感（得気）が得られる点を確認する"
-      ],
-      needle: "直刺0.5〜1.0寸。",
-      caution: "妊婦への施術は原則禁忌（子宮収縮作用あり）。"
+      posture: "前腕回外位（手掌上向き）、手首をリラックスさせる。",
+      landmark: "手関節掌側横紋と橈骨動脈の拍動を触知する。",
+      steps: ["手関節掌側横紋を確認する", "横紋から上方1寸の位置を測る", "橈骨動脈の拍動を触れる（橈側）", "橈骨動脈と橈骨茎状突起の間の陥凹が取穴点"],
+      needle: "直刺0.2〜0.3寸。",
+      caution: "禁灸穴。橈骨動脈が直上を走行するため、動脈への直接刺鍼に注意。"
     }
   },
   {
-    id: "LI11", code: "LI-11", name: "曲池", reading: "きょくち",
-    meridian: "大腸経", meridianEn: "Large Intestine Meridian", meridianCode: "LI",
-    location: "肘外側、肘窩横紋の外端と上腕骨外側上顆の中点",
-    locationShort: "肘窩横紋外端と外側上顆の中点",
-    effects: ["発熱", "皮膚疾患", "上肢麻痺", "高血圧", "アレルギー"],
-    effectsShort: "発熱・皮膚疾患・上肢麻痺",
-    special: "大腸経の合穴（土）。清熱・祛風・調和営衛の要穴。",
-    examYears: ["第30回", "第33回"],
-    anatomy: {
-      muscles: [
-        { name: "橈側手根伸筋（長・短）", detail: "（直下）" },
-        { name: "上腕橈骨筋", detail: "（橈側）" },
-        { name: "総指伸筋", detail: "（尺側）" }
-      ],
-      nerves: [
-        { name: "橈骨神経", detail: "（深枝・浅枝分岐付近）" },
-        { name: "前腕外側皮神経", detail: "" }
-      ],
-      vessels: [
-        { name: "橈側反回動脈", detail: "" },
-        { name: "橈側副動脈", detail: "" }
-      ]
-    },
-    howto: {
-      posture: "肘を約90度屈曲し、前腕を回内位（手背上）で固定する。",
-      landmark: "肘を曲げたときに出現する肘窩横紋の外端と、上腕骨外側上顆を触知する。",
-      steps: [
-        "肘を直角に曲げて肘窩横紋を確認する",
-        "横紋の外端（橈側端）を触れる",
-        "上腕骨外側上顆を触知する",
-        "その2点の中点を取穴点とする"
-      ],
-      needle: "直刺1.0〜1.5寸。",
-      caution: null
-    }
-  },
-  {
-    id: "ST36", code: "ST-36", name: "足三里", reading: "あしさんり",
-    meridian: "胃経", meridianEn: "Stomach Meridian", meridianCode: "ST",
-    location: "下腿前外側、犢鼻の下方3寸、脛骨前縁の外方1横指（中指）",
-    locationShort: "犢鼻の下方3寸・脛骨外縁",
-    effects: ["胃痛", "嘔吐", "下痢", "倦怠感", "免疫増強", "下肢麻痺"],
-    effectsShort: "胃腸疾患・倦怠感・補益",
-    special: "胃経の合穴（土）。強壮・補益の代表穴。四総穴の一（肚腹三里留）。",
-    examYears: ["第27回", "第29回", "第31回", "第33回"],
-    anatomy: {
-      muscles: [
-        { name: "前脛骨筋", detail: "（橈側・浅層）" },
-        { name: "長指伸筋", detail: "（尺側）" },
-        { name: "深指屈筋", detail: "（深層）" }
-      ],
-      nerves: [
-        { name: "深腓骨神経", detail: "（L4〜S1）" },
-        { name: "外側腓腹皮神経", detail: "" }
-      ],
-      vessels: [
-        { name: "前脛骨動脈", detail: "" },
-        { name: "前脛骨静脈", detail: "" }
-      ]
-    },
-    howto: {
-      posture: "仰臥位または座位（膝を約90度屈曲）。",
-      landmark: "犢鼻（膝蓋骨下縁・膝蓋靭帯外側の陥凹）を触知する。",
-      steps: [
-        "膝蓋骨の下縁・膝蓋靭帯の外側にある陥凹（犢鼻）を確認する",
-        "犢鼻から下方3寸（4横指）の位置を測る",
-        "脛骨前縁から外方1横指（中指）の位置を確認する",
-        "前脛骨筋の豊隆した部位に取穴点がある"
-      ],
-      needle: "直刺1.0〜1.5寸。",
-      caution: null
-    }
-  },
-  {
-    id: "SP6", code: "SP-6", name: "三陰交", reading: "さんいんこう",
-    meridian: "脾経", meridianEn: "Spleen Meridian", meridianCode: "SP",
-    location: "下腿内側、内果尖の上方3寸、脛骨内側縁の後際",
-    locationShort: "内果尖の上方3寸・脛骨内縁後際",
-    effects: ["婦人科疾患", "生理痛", "不妊", "不眠", "泌尿器疾患", "浮腫"],
-    effectsShort: "婦人科疾患・不眠・泌尿器",
-    special: "脾・肝・腎三陰の交会穴。婦人科・泌尿器疾患の要穴。",
+    id: "LU9", code: "LU-9", name: "太淵", reading: "たいえん",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "手関節前外側、橈骨茎状突起と舟状骨の間、長母指外転筋腱の尺側の陥凹部",
+    locationShort: "手関節掌側横紋・橈側の陥凹部",
+    effects: ["咳", "喘息", "喀血", "脈管疾患", "手関節痛"],
+    effectsShort: "咳・喘息・脈管疾患",
+    special: "肺経の原穴・兪穴（土）。八会穴の脈の会。脈管疾患の要穴。",
+    badges: ["原穴", "兪穴（土）", "脈の会"],
     examYears: ["第28回", "第30回", "第32回"],
     anatomy: {
-      muscles: [
-        { name: "ヒラメ筋", detail: "（後方）" },
-        { name: "長指屈筋", detail: "（後方深層）" },
-        { name: "後脛骨筋", detail: "（最深層）" }
-      ],
-      nerves: [
-        { name: "伏在神経", detail: "（L3〜L4）" },
-        { name: "脛骨神経", detail: "（深層）" }
-      ],
-      vessels: [
-        { name: "後脛骨動脈", detail: "（深層）" },
-        { name: "大伏在静脈", detail: "（前方）" }
-      ]
+      muscles: [{ name: "長母指外転筋腱", detail: "（橈側に隣接）" }, { name: "短母指伸筋腱", detail: "（橈側）" }],
+      nerves: [{ name: "橈骨神経浅枝", detail: "" }, { name: "正中神経掌側皮枝", detail: "" }],
+      vessels: [{ name: "橈骨動脈", detail: "（直内側・拍動触知可能）" }, { name: "橈側皮静脈", detail: "" }]
     },
     howto: {
-      posture: "仰臥位または座位（足首をリラックス）。",
-      landmark: "内果尖（内くるぶしの最高点）を触知する。",
-      steps: [
-        "内果尖を確認し、そこから上方3寸（4横指）を測る",
-        "脛骨の内側縁に指を当て、縁の後際（脛骨と軟部組織の境界）を触れる",
-        "脛骨内側縁の後際で、押圧すると深部に響く点を取穴点とする",
-        "押圧で脛骨神経領域への響きが確認できる場合あり"
-      ],
-      needle: "直刺1.0〜1.5寸。",
-      caution: "妊婦への施術は原則禁忌（子宮収縮・分娩促進作用あり）。"
-    }
-  },
-  {
-    id: "HT7", code: "HT-7", name: "神門", reading: "しんもん",
-    meridian: "心経", meridianEn: "Heart Meridian", meridianCode: "HT",
-    location: "手関節前内側、尺側手根屈筋腱の橈側縁、手関節掌側横紋上",
-    locationShort: "手関節掌側横紋・尺側屈筋腱橈側",
-    effects: ["不眠", "動悸", "不安", "健忘", "精神不安"],
-    effectsShort: "不眠・動悸・精神不安",
-    special: "心経の原穴・兪穴（土）。心神を安定させる代表穴。",
-    examYears: ["第31回", "第33回"],
-    anatomy: {
-      muscles: [
-        { name: "尺側手根屈筋腱", detail: "（尺側に隣接）" },
-        { name: "浅指屈筋", detail: "（深層）" }
-      ],
-      nerves: [
-        { name: "尺骨神経", detail: "（掌側皮枝）" },
-        { name: "内側前腕皮神経", detail: "" }
-      ],
-      vessels: [
-        { name: "尺骨動脈", detail: "（橈側）" },
-        { name: "尺骨静脈", detail: "" }
-      ]
-    },
-    howto: {
-      posture: "仰臥位または座位。手掌を上向きにして手首を軽度背屈する。",
-      landmark: "手関節掌側横紋上で、尺側手根屈筋腱を触知する。",
-      steps: [
-        "手関節掌側の横紋を確認する",
-        "小指側で尺側手根屈筋腱（豆状骨に向かう太い腱）を触れる",
-        "その腱の橈側縁（内側）、横紋上が取穴点",
-        "押圧すると小指・薬指方向への響きが出ることがある"
-      ],
+      posture: "前腕回外位、手首を軽度背屈させる。",
+      landmark: "手関節掌側横紋の橈側端と橈骨動脈の拍動を触知する。",
+      steps: ["手関節掌側横紋の橈側端を確認する", "橈骨動脈の拍動を触れる", "長母指外転筋腱の尺側（内側）に指を当てる", "横紋上の陥凹部が取穴点"],
       needle: "直刺0.3〜0.5寸。",
-      caution: "尺骨動脈・神経が近接しているため、深刺・乱刺に注意。"
+      caution: "橈骨動脈が内側を走行。動脈への直接刺鍼に注意。"
     }
   },
   {
-    id: "BL40", code: "BL-40", name: "委中", reading: "いちゅう",
-    meridian: "膀胱経", meridianEn: "Bladder Meridian", meridianCode: "BL",
-    location: "膝後面、膝窩横紋の中点",
-    locationShort: "膝窩横紋の中点",
-    effects: ["腰痛", "下肢麻痺", "膝関節痛", "皮膚疾患", "中暑"],
-    effectsShort: "腰痛・下肢麻痺・膝痛",
-    special: "膀胱経の合穴（土）。四総穴の一（腰背委中求）。",
-    examYears: ["第29回", "第32回"],
+    id: "LU10", code: "LU-10", name: "魚際", reading: "ぎょさい",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "手掌、第1中手骨中点の橈側縁、赤白肉際",
+    locationShort: "第1中手骨中点の橈側・赤白肉際",
+    effects: ["咳", "喀血", "咽頭痛", "発熱", "失声"],
+    effectsShort: "咳・咽頭痛・発熱・失声",
+    special: "肺経の滎穴（火）。肺熱を清し、咽喉疾患に多用する。",
+    badges: ["滎穴（火）"],
+    examYears: ["第29回"],
     anatomy: {
-      muscles: [
-        { name: "膝窩筋", detail: "（深層）" },
-        { name: "腓腹筋（内側頭・外側頭）", detail: "（両側）" }
-      ],
-      nerves: [
-        { name: "脛骨神経", detail: "（中央を走行）" },
-        { name: "後大腿皮神経", detail: "（浅層）" }
-      ],
-      vessels: [
-        { name: "膝窩動脈", detail: "（深層・重要）" },
-        { name: "膝窩静脈", detail: "" }
-      ]
+      muscles: [{ name: "短母指外転筋", detail: "（橈側・浅層）" }, { name: "短母指屈筋", detail: "（尺側）" }, { name: "母指対立筋", detail: "（深層）" }],
+      nerves: [{ name: "正中神経（母指球筋枝）", detail: "" }, { name: "橈骨神経浅枝", detail: "（背側）" }],
+      vessels: [{ name: "第1中手動脈", detail: "（橈側）" }, { name: "母指主動脈", detail: "" }]
     },
     howto: {
-      posture: "腹臥位（うつぶせ）。膝を軽度屈曲させると取穴しやすい。",
-      landmark: "膝窩（膝裏）の横紋を確認する。",
-      steps: [
-        "膝窩横紋をはっきり確認する",
-        "横紋の内端（半腱様筋腱内側）と外端（大腿二頭筋腱外側）の中点を取穴点とする",
-        "膝窩動脈の拍動が触れる位置とほぼ一致する",
-        "押圧で下腿・足底への響きが出ることがある"
-      ],
-      needle: "直刺1.0〜1.5寸。または三稜針で刺絡療法。",
-      caution: "膝窩動脈・静脈・脛骨神経が密集しているため、深刺・強刺激に注意。"
+      posture: "手掌を上向きにしてリラックスさせる。",
+      landmark: "第1中手骨（母指の根元の骨）を触知する。",
+      steps: ["母指の付け根の膨らみ（母指球）を確認する", "第1中手骨の中点を触れる", "手掌面（白い部分）と手背面（赤い部分）の境界（赤白肉際）を確認する", "中手骨中点の橈側縁・赤白肉際が取穴点"],
+      needle: "直刺0.5〜0.8寸。",
+      caution: null
     }
   },
   {
-    id: "KI3", code: "KI-3", name: "太谿", reading: "たいけい",
-    meridian: "腎経", meridianEn: "Kidney Meridian", meridianCode: "KI",
-    location: "足関節後内側、内果尖とアキレス腱の間の陥凹部",
-    locationShort: "内果尖とアキレス腱の間",
-    effects: ["腎虚", "耳鳴り", "浮腫", "腰痛", "不妊", "歯痛"],
-    effectsShort: "腎虚・耳鳴り・腰痛",
-    special: "腎経の原穴・兪穴（土）。腎陰陽を補う代表穴。",
+    id: "LU11", code: "LU-11", name: "少商", reading: "しょうしょう",
+    meridian: "手の太陰肺経", meridianEn: "Lung Meridian", meridianCode: "LU",
+    location: "母指、末節骨橈側、爪甲角の近位外方0.1寸（指寸）",
+    locationShort: "母指爪甲角の橈側0.1寸",
+    effects: ["咽頭痛", "扁桃炎", "発熱", "昏迷", "鼻出血"],
+    effectsShort: "咽頭痛・扁桃炎・昏迷",
+    special: "肺経の井穴（木）。救急・開竅の要穴。刺絡による咽喉疾患に多用。",
+    badges: ["井穴（木）"],
     examYears: ["第30回", "第33回"],
     anatomy: {
-      muscles: [
-        { name: "長母指屈筋腱", detail: "（前方深層）" },
-        { name: "アキレス腱", detail: "（後方に隣接）" }
-      ],
-      nerves: [
-        { name: "脛骨神経", detail: "（後方を走行）" },
-        { name: "内側踵骨枝", detail: "" }
-      ],
-      vessels: [
-        { name: "後脛骨動脈", detail: "（前方）" },
-        { name: "後脛骨静脈", detail: "" }
-      ]
+      muscles: [{ name: "（筋肉なし）", detail: "爪甲根部付近の皮下組織" }],
+      nerves: [{ name: "橈骨神経浅枝（背側指神経）", detail: "" }, { name: "正中神経（掌側指神経）", detail: "" }],
+      vessels: [{ name: "指掌側固有動脈（橈側）", detail: "" }, { name: "指背動脈", detail: "" }]
     },
     howto: {
-      posture: "仰臥位または座位（足関節をリラックス）。",
-      landmark: "内果尖（内くるぶし最高点）とアキレス腱の間の凹みを触知する。",
-      steps: [
-        "内果の最高点（内果尖）を確認する",
-        "アキレス腱の前縁を触れる",
-        "その2点の中間・同高（内果尖と同じ高さ）の陥凹を確認する",
-        "後脛骨動脈の拍動が触れることがある"
-      ],
-      needle: "直刺0.5〜1.0寸。",
-      caution: "後脛骨動脈・脛骨神経が近接。深刺・乱刺注意。"
-    }
-  },
-  {
-    id: "GB34", code: "GB-34", name: "陽陵泉", reading: "ようりょうせん",
-    meridian: "胆経", meridianEn: "Gallbladder Meridian", meridianCode: "GB",
-    location: "下腿外側、腓骨頭前下方の陥凹部",
-    locationShort: "腓骨頭前下方の陥凹部",
-    effects: ["胆道疾患", "筋肉痛", "側胸部痛", "下肢麻痺", "腱炎"],
-    effectsShort: "胆道疾患・筋腱痛・下肢麻痺",
-    special: "胆経の合穴（土）。八会穴の筋の会。筋・腱疾患の要穴。",
-    examYears: ["第28回", "第31回"],
-    anatomy: {
-      muscles: [
-        { name: "長腓骨筋", detail: "（前方）" },
-        { name: "短腓骨筋", detail: "（後方）" },
-        { name: "前脛骨筋", detail: "（前内側）" }
-      ],
-      nerves: [
-        { name: "総腓骨神経", detail: "（腓骨頭直下で浅・深腓骨神経に分岐）" },
-        { name: "外側腓腹皮神経", detail: "" }
-      ],
-      vessels: [
-        { name: "下外側膝動脈", detail: "" },
-        { name: "前脛骨動脈（起始部）", detail: "" }
-      ]
-    },
-    howto: {
-      posture: "側臥位または座位（膝を軽度屈曲）。",
-      landmark: "腓骨頭（膝外側の骨突出）を触知する。",
-      steps: [
-        "腓骨頭の位置を確認する（膝外側の丸い骨突出）",
-        "腓骨頭の前下方にある陥凹を触れる",
-        "長腓骨筋と前脛骨筋の間の溝に取穴点がある",
-        "押圧で下腿外側または足背への響きが出ることがある"
-      ],
-      needle: "直刺1.0〜1.5寸。",
-      caution: "総腓骨神経が腓骨頭直下を走行。神経への直接刺鍼注意。"
+      posture: "母指を軽く屈曲させる。",
+      landmark: "母指の爪甲角（爪の角）を確認する。",
+      steps: ["母指の爪の橈側の角（爪甲角）を確認する", "爪甲角から近位外方0.1寸（約1〜2mm）の位置を取る", "爪甲の根元・橈側縁が取穴点", "刺絡の場合は三稜針で点刺して出血させる"],
+      needle: "浅刺0.1寸。または三稜針で刺絡。",
+      caution: null
     }
   }
 ];
 
 const QUESTIONS = [
   {
-    year: "第31回 国家試験（2023年）",
-    text: "合谷について正しいのはどれか。",
-    choices: ["肺経の原穴である", "大腸経の原穴である", "手背、第1中手骨の中点に取る", "禁鍼穴である"],
+    year: "第31回（2023年）", related: "関連：中府 LU-1",
+    text: "中府について正しいのはどれか。",
+    choices: ["肺経の兪穴である", "肺の募穴である", "前正中線の外方4寸に取る", "禁鍼穴である"],
     answer: 1,
-    explanation: "合谷（LI-4）は大腸経の原穴です。第2中手骨中点の橈側縁に取穴します。"
+    explanation: "中府（LU-1）は肺の募穴であり、肺・脾の交会穴です。前正中線の外方6寸に取穴します。"
   },
   {
-    year: "第30回 国家試験（2022年）",
-    text: "四総穴で「腰背は委中に求む」に該当するのはどれか。",
-    choices: ["足三里（ST-36）", "列缺（LU-7）", "委中（BL-40）", "合谷（LI-4）"],
+    year: "第30回（2022年）", related: "関連：孔最 LU-6",
+    text: "郄穴について正しいのはどれか。",
+    choices: ["各経脈に1穴ある", "急性・疼痛疾患に用いる", "原気が集まる穴である", "絡脈に気が集まる穴である"],
+    answer: 1,
+    explanation: "郄穴は各経脈の気血が集まる穴で、急性疾患や疼痛に対して効果を発揮します。肺経の郄穴は孔最（LU-6）です。"
+  },
+  {
+    year: "第29回（2021年）", related: "関連：太淵 LU-9",
+    text: "八会穴で「脈の会」はどれか。",
+    choices: ["太淵（LU-9）", "陽陵泉（GB-34）", "膈兪（BL-17）", "大杼（BL-11）"],
+    answer: 0,
+    explanation: "八会穴：脈→太淵（LU-9）、筋→陽陵泉、血→膈兪、骨→大杼、髄→絶骨、気→膻中、臓→章門、腑→中脈"
+  },
+  {
+    year: "第32回（2024年）", related: "関連：列缺 LU-7",
+    text: "四総穴で「頭項は列缺に求む」の列缺の取穴として正しいのはどれか。",
+    choices: ["橈骨茎状突起の近位1寸", "橈骨茎状突起の近位1.5寸", "橈骨茎状突起の遠位1寸", "橈骨茎状突起の遠位1.5寸"],
+    answer: 1,
+    explanation: "列缺（LU-7）は橈骨茎状突起の近位1.5寸、長母指外転筋腱と短母指伸筋腱の間の陥凹部に取穴します。"
+  },
+  {
+    year: "第33回（2025年）", related: "関連：少商 LU-11",
+    text: "肺経の井穴はどれか。",
+    choices: ["魚際（LU-10）", "少商（LU-11）", "尺沢（LU-5）", "太淵（LU-9）"],
+    answer: 1,
+    explanation: "井穴は経脈の気が出始める穴（末端の穴）です。肺経の井穴は少商（LU-11）、五行は木に属します。"
+  },
+  {
+    year: "第28回（2020年）", related: "関連：経渠 LU-8",
+    text: "禁灸穴はどれか。",
+    choices: ["太淵（LU-9）", "列缺（LU-7）", "経渠（LU-8）", "孔最（LU-6）"],
     answer: 2,
-    explanation: "四総穴：肚腹→足三里、腰背→委中、頭項→列缺、面口→合谷"
-  },
-  {
-    year: "第29回 国家試験（2021年）",
-    text: "三陰交について正しいのはどれか。",
-    choices: ["脾・心・腎の三陰が交わる", "脾・肝・腎の三陰が交わる", "内果尖の上方5寸に取る", "妊婦への施術に禁忌はない"],
-    answer: 1,
-    explanation: "三陰交（SP-6）は脾・肝・腎三陰経の交会穴。内果尖の上方3寸。妊婦への施術は原則禁忌。"
-  },
-  {
-    year: "第33回 国家試験（2025年）",
-    text: "筋の会穴はどれか。",
-    choices: ["太谿（KI-3）", "陽陵泉（GB-34）", "足三里（ST-36）", "曲池（LI-11）"],
-    answer: 1,
-    explanation: "八会穴：筋→陽陵泉（GB-34）、脈→太淵、骨→大杼、髄→絶骨、血→膈兪、気→膻中、臓→章門、腑→中脘"
-  },
-  {
-    year: "第32回 国家試験（2024年）",
-    text: "妊婦への施術に禁忌または慎重を要するのはどれか。2つ選べ。",
-    choices: ["中府（LU-1）", "合谷（LI-4）", "三陰交（SP-6）", "神門（HT-7）"],
-    answer: 2,
-    explanation: "合谷（LI-4）と三陰交（SP-6）は分娩促進・子宮収縮作用があるため、妊婦への施術は原則禁忌です。"
+    explanation: "経渠（LU-8）は橈骨動脈が直上を走行するため禁灸穴とされています。鍼は可能ですが、灸は禁忌です。"
   }
 ];
 
@@ -1244,15 +1153,45 @@ let currentIdx = 0;
 let isFlipped = false;
 let goodCount = 0;
 let againCount = 0;
-let filteredPoints = [...ACUPOINTS];
-let currentMode = 'flash';
+let cardStatus = new Array(ACUPOINTS.length).fill('none'); // 'none' | 'good' | 'again'
 let currentQuestion = 0;
 let questionAnswered = false;
-let activeBackTab = 'basic';
 
-// ========== Card ==========
+// ========== Init ==========
+function init() {
+  renderPointList();
+  renderCard();
+  updateStats();
+}
+
+function renderPointList() {
+  const el = document.getElementById('pointList');
+  el.innerHTML = ACUPOINTS.map((p, i) => `
+    <div class="point-thumb ${i === currentIdx ? 'active' : ''} ${cardStatus[i] === 'good' ? 'done' : ''} ${cardStatus[i] === 'again' ? 'again' : ''}"
+         onclick="jumpTo(${i})" id="thumb-${i}">
+      <div class="thumb-code">${p.code}</div>
+      <div class="thumb-name">${p.name}</div>
+    </div>
+  `).join('');
+}
+
+function updateThumb(idx) {
+  const thumb = document.getElementById('thumb-' + idx);
+  if (!thumb) return;
+  thumb.className = `point-thumb ${idx === currentIdx ? 'active' : ''} ${cardStatus[idx] === 'good' ? 'done' : ''} ${cardStatus[idx] === 'again' ? 'again' : ''}`;
+}
+
+function jumpTo(idx) {
+  // 前のthumbを更新
+  const prevIdx = currentIdx;
+  currentIdx = idx;
+  updateThumb(prevIdx);
+  updateThumb(idx);
+  renderCard();
+}
+
 function renderCard() {
-  const p = filteredPoints[currentIdx];
+  const p = ACUPOINTS[currentIdx];
   if (!p) return;
 
   const card = document.getElementById('flashCard');
@@ -1260,7 +1199,6 @@ function renderCard() {
   isFlipped = false;
   document.getElementById('actionBtns').style.display = 'none';
 
-  // 前面
   document.getElementById('cardMeridian').textContent = p.meridian + ' · ' + p.meridianEn;
   document.getElementById('cardCode').textContent = p.code;
   document.getElementById('cardName').textContent = p.name;
@@ -1268,49 +1206,56 @@ function renderCard() {
   document.getElementById('quickLocation').textContent = p.locationShort;
   document.getElementById('quickEffects').textContent = p.effectsShort;
 
-  // 背面 - 基本情報
+  // バッジ
+  const badgesEl = document.getElementById('cardBadges');
+  let badgeHtml = p.badges.map(b => `<span class="badge badge-go">${b}</span>`).join('');
+  if (p.examYears && p.examYears.length) badgeHtml += `<span class="badge badge-exam">国試出題</span>`;
+  if (p.howto.caution) badgeHtml += `<span class="badge badge-caution">注意</span>`;
+  badgesEl.innerHTML = badgeHtml;
+
+  // 基本情報
   document.getElementById('backLocation').textContent = p.location;
   document.getElementById('backEffects').innerHTML = p.effects.map(e => `<span class="tag">${e}</span>`).join('');
   document.getElementById('backSpecial').textContent = p.special;
 
   const badgeWrap = document.getElementById('examBadgeWrap');
   badgeWrap.innerHTML = p.examYears && p.examYears.length
-    ? `<div style="margin-top:12px;"><span class="exam-badge"><span class="exam-dot"></span>国試出題：${p.examYears.join('・')}</span></div>`
+    ? `<div style="margin-top:10px; font-size:11px; color:var(--red); letter-spacing:0.08em;">● 国試出題：${p.examYears.join('・')}</div>`
     : '';
 
-  // 背面 - 解剖
-  const ag = document.getElementById('anatomyGrid');
-  ag.innerHTML = `
-    ${renderAnatomyCard('筋肉', p.anatomy.muscles, '#4a5e3a')}
-    ${renderAnatomyCard('神経', p.anatomy.nerves, '#3a5a7a')}
-    ${renderAnatomyCard('血管', p.anatomy.vessels, '#8b3a3a')}
-  `;
+  // 解剖
+  document.getElementById('anatomyGrid').innerHTML = [
+    { label: '筋肉', items: p.anatomy.muscles, color: '#4a5e3a' },
+    { label: '神経', items: p.anatomy.nerves, color: '#3a5a7a' },
+    { label: '血管', items: p.anatomy.vessels, color: '#8b3a3a' }
+  ].map(({ label, items, color }) => `
+    <div class="anatomy-card">
+      <div class="anatomy-card-label" style="color:${color}">${label}</div>
+      ${items.map(m => `
+        <div class="anatomy-item">
+          <div class="anatomy-bullet" style="background:${color}"></div>
+          <div><span>${m.name}</span> <span class="anatomy-item-sub">${m.detail}</span></div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
 
-  // 背面 - 取穴
-  const hs = document.getElementById('howtoSteps');
-  const stepsHtml = [
+  // 取穴
+  const steps = [
     { label: '体位', text: p.howto.posture },
-    { label: 'ランドマーク', text: p.howto.landmark }
-  ].map((s, i) => `
+    { label: 'ランドマーク', text: p.howto.landmark },
+    ...p.howto.steps.map(s => ({ label: '', text: s }))
+  ];
+
+  document.getElementById('howtoSteps').innerHTML = steps.map((s, i) => `
     <div class="howto-step">
       <div class="step-num">${i + 1}</div>
-      <div class="step-body">
-        <div class="step-label">${s.label}</div>
+      <div>
+        ${s.label ? `<div class="step-label">${s.label}</div>` : ''}
         <div class="step-text">${s.text}</div>
       </div>
     </div>
   `).join('');
-
-  const numberedSteps = p.howto.steps.map((s, i) => `
-    <div class="howto-step">
-      <div class="step-num">${i + 3}</div>
-      <div class="step-body">
-        <div class="step-text">${s}</div>
-      </div>
-    </div>
-  `).join('');
-
-  hs.innerHTML = stepsHtml + numberedSteps;
 
   document.getElementById('needleInfo').innerHTML = `
     <div class="needle-info">
@@ -1320,76 +1265,80 @@ function renderCard() {
   `;
 
   document.getElementById('cautionBox').innerHTML = p.howto.caution
-    ? `<div class="caution-box">⚠️ ${p.howto.caution}</div>`
-    : '';
+    ? `<div class="caution-box">⚠️ ${p.howto.caution}</div>` : '';
 
-  // タブリセット
   switchBackTab('basic', null);
 
-  document.getElementById('cardCounter').textContent = `${currentIdx + 1} / ${filteredPoints.length}`;
-  updateStats();
+  document.getElementById('cardCounter').textContent = `${currentIdx + 1} / ${ACUPOINTS.length}`;
+  document.getElementById('btnPrev').disabled = currentIdx === 0;
+  document.getElementById('btnNext').disabled = currentIdx === ACUPOINTS.length - 1;
 
   const stage = document.querySelector('.card-stage');
   stage.style.animation = 'none';
   requestAnimationFrame(() => { stage.style.animation = 'fadeUp 0.3s ease both'; });
 }
 
-function renderAnatomyCard(label, items, color) {
-  const dots = items.map(m =>
-    `<div class="anatomy-item">
-      <div class="anatomy-bullet" style="background:${color}"></div>
-      <div><span class="anatomy-item-text">${m.name}</span> <span class="anatomy-item-sub">${m.detail}</span></div>
-    </div>`
-  ).join('');
-  return `
-    <div class="anatomy-card">
-      <div class="anatomy-card-label" style="color:${color}">${label}</div>
-      ${dots}
-    </div>
-  `;
-}
-
 function handleCardClick(e) {
-  if (e.target.closest('.back-tabs') || e.target.closest('.back-tab')) return;
+  if (e.target.closest('.back-tabs')) return;
   flipCard();
 }
 
 function flipCard() {
-  const card = document.getElementById('flashCard');
   isFlipped = !isFlipped;
-  card.classList.toggle('flipped', isFlipped);
+  document.getElementById('flashCard').classList.toggle('flipped', isFlipped);
   document.getElementById('actionBtns').style.display = isFlipped ? 'grid' : 'none';
 }
 
 function switchBackTab(tabId, btn) {
-  activeBackTab = tabId;
-  document.querySelectorAll('.back-tab').forEach((t, i) => {
-    const ids = ['basic', 'anatomy', 'howto'];
-    t.classList.toggle('active', ids[i] === tabId);
-  });
+  const ids = ['basic', 'anatomy', 'howto'];
+  document.querySelectorAll('.back-tab').forEach((t, i) => t.classList.toggle('active', ids[i] === tabId));
   document.querySelectorAll('.back-panel').forEach(p => p.classList.remove('visible'));
   const panel = document.getElementById('panel-' + tabId);
   if (panel) panel.classList.add('visible');
 }
 
 function answerCard(type) {
-  if (type === 'good') goodCount++;
-  else if (type === 'again') againCount++;
+  const prev = cardStatus[currentIdx];
+  if (type === 'good') {
+    if (prev !== 'good') goodCount++;
+    if (prev === 'again') againCount--;
+    cardStatus[currentIdx] = 'good';
+  } else if (type === 'again') {
+    if (prev !== 'again') againCount++;
+    if (prev === 'good') goodCount--;
+    cardStatus[currentIdx] = 'again';
+  } else {
+    cardStatus[currentIdx] = 'hard';
+  }
+  updateThumb(currentIdx);
   updateStats();
-  nextCard();
+  if (currentIdx < ACUPOINTS.length - 1) nextCard();
 }
 
 function nextCard() {
-  if (currentIdx < filteredPoints.length - 1) { currentIdx++; renderCard(); }
+  if (currentIdx < ACUPOINTS.length - 1) {
+    const prev = currentIdx;
+    currentIdx++;
+    updateThumb(prev);
+    updateThumb(currentIdx);
+    renderCard();
+  }
 }
 
 function prevCard() {
-  if (currentIdx > 0) { currentIdx--; renderCard(); }
+  if (currentIdx > 0) {
+    const prev = currentIdx;
+    currentIdx--;
+    updateThumb(prev);
+    updateThumb(currentIdx);
+    renderCard();
+  }
 }
 
 function updateStats() {
-  const done = goodCount + againCount;
-  const total = filteredPoints.length;
+  const total = ACUPOINTS.length;
+  const done = cardStatus.filter(s => s === 'good' || s === 'again').length;
+  document.getElementById('statTotal').textContent = total;
   document.getElementById('statRemaining').textContent = total - done;
   document.getElementById('statGood').textContent = goodCount;
   document.getElementById('statAgain').textContent = againCount;
@@ -1399,30 +1348,20 @@ function updateStats() {
   document.getElementById('progressFill').style.width = pct + '%';
 }
 
-function selectMeridian(code, btn) {
-  document.querySelectorAll('.meridian-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filteredPoints = code === 'all' ? [...ACUPOINTS] : ACUPOINTS.filter(p => p.meridianCode === code);
-  currentIdx = 0; goodCount = 0; againCount = 0;
-  renderCard();
-}
-
 function switchMode(mode) {
-  currentMode = mode;
   document.querySelectorAll('.mode-tab').forEach((t, i) => {
     t.classList.toggle('active', (i === 0 && mode === 'flash') || (i === 1 && mode === 'quiz'));
   });
   document.getElementById('flashSection').classList.toggle('hidden', mode === 'quiz');
   document.getElementById('quizSection').classList.toggle('visible', mode === 'quiz');
-  document.getElementById('meridianSelect').style.display = mode === 'flash' ? 'flex' : 'none';
   if (mode === 'quiz') renderQuestion();
 }
 
-// ========== 国試 ==========
 function renderQuestion() {
   const q = QUESTIONS[currentQuestion];
   questionAnswered = false;
   document.getElementById('qYear').textContent = q.year;
+  document.getElementById('qRelated').textContent = q.related;
   document.getElementById('qText').textContent = q.text;
   document.getElementById('qChoices').innerHTML = q.choices.map((c, i) =>
     `<button class="choice-btn" onclick="answerQuestion(${i})">${i + 1}. ${c}</button>`
@@ -1447,8 +1386,7 @@ function nextQuestion() {
   renderQuestion();
 }
 
-// init
-renderCard();
+init();
 </script>
 </body>
 </html>
