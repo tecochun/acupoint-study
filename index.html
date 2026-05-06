@@ -125,6 +125,35 @@
 
   .mode-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
 
+  /* 要穴一覧 */
+  .yoken-section { display: none; padding: 8px 0 24px; }
+  .yoken-section.visible { display: block; }
+  .yoken-block { margin-bottom: 28px; }
+  .yoken-title { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: 0.08em; margin-bottom: 4px; padding-bottom: 6px; border-bottom: 2px solid var(--gold); }
+  .yoken-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .yoken-note { font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+  .yoken-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .yoken-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 420px; }
+  .yoken-table th { background: var(--card-bg); color: var(--muted); font-weight: 600; text-align: center; padding: 7px 5px; border: 1px solid var(--border); font-size: 11px; letter-spacing: 0.05em; }
+  .yoken-table td { text-align: center; padding: 6px 5px; border: 1px solid var(--border); }
+  .in-kei td:nth-child(2) { font-weight: 600; color: var(--ink); background: rgba(180,140,100,0.07); }
+  .yo-kei td:nth-child(2) { font-weight: 600; color: var(--ink); background: rgba(100,140,180,0.07); }
+  .yu-cell { font-weight: 700; color: var(--red); }
+  .gogyo-cell { font-weight: 700; font-size: 11px; width: 22px; }
+  .gogyou { display: inline-block; font-size: 10px; font-weight: 700; border-radius: 3px; padding: 1px 4px; margin-bottom: 2px; }
+  .ki  { background: #e8f5e0; color: #3a6a2a; }
+  .hi  { background: #fdecea; color: #9a2a2a; }
+  .do  { background: #fdf5e0; color: #7a5a10; }
+  .kin { background: #f0f4f8; color: #3a5a7a; }
+  .sui { background: #e8f0fa; color: #2a4a7a; }
+  .gogyo-cell.ki  { background: #e8f5e0; color: #3a6a2a; }
+  .gogyo-cell.hi  { background: #fdecea; color: #9a2a2a; }
+  .gogyo-cell.do  { background: #fdf5e0; color: #7a5a10; }
+  .gogyo-cell.kin { background: #f0f4f8; color: #3a5a7a; }
+  .gogyo-cell.sui { background: #e8f0fa; color: #2a4a7a; }
+  .highlight-lu td { background: rgba(180,120,60,0.10) !important; font-weight: 600; }
+  .sep-row td { height: 6px; background: var(--bg); border: none; padding: 0; }
+
   /* 経穴リスト（サムネイル） */
   .point-list {
     display: grid;
@@ -278,8 +307,16 @@
     font-family: 'DM Serif Display', serif;
     font-size: 13px;
     color: var(--muted);
-    margin-bottom: 18px;
+    margin-bottom: 6px;
   }
+
+  /* 流注 */
+  .ryuchu-details { margin: 0 0 10px; text-align: left; }
+  .ryuchu-summary { font-size: 10px; color: var(--gold); letter-spacing: 0.08em; cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 4px; }
+  .ryuchu-summary::-webkit-details-marker { display: none; }
+  .ryuchu-summary::before { content: '▶'; font-size: 8px; transition: transform 0.2s; }
+  .ryuchu-details[open] .ryuchu-summary::before { transform: rotate(90deg); }
+  .ryuchu-text { font-size: 10.5px; color: var(--ink); line-height: 1.9; margin-top: 6px; padding: 8px 10px; background: rgba(180,140,80,0.07); border-radius: 6px; border-left: 2px solid var(--gold); }
 
   .card-name-main {
     font-family: 'Noto Serif JP', serif;
@@ -704,6 +741,7 @@
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('flash')">フラッシュカード</button>
     <button class="mode-tab" onclick="switchMode('quiz')">国試過去問</button>
+    <button class="mode-tab" onclick="switchMode('yoken')">要穴一覧</button>
   </div>
 
   <!-- 経穴サムネイル -->
@@ -750,6 +788,10 @@
           <div class="front-body">
             <div class="card-meridian" id="cardMeridian">手の太陰肺経</div>
             <div class="card-code" id="cardCode">LU-1</div>
+            <details class="ryuchu-details" onclick="event.stopPropagation()">
+              <summary class="ryuchu-summary">経脈の流注</summary>
+              <div class="ryuchu-text" id="cardRyuchu"></div>
+            </details>
             <div class="card-name-main" id="cardName">中府</div>
             <div class="card-name-reading" id="cardReading">ちゅうふ</div>
             <div class="card-badges" id="cardBadges"></div>
@@ -835,6 +877,168 @@
     </div>
   </div>
 
+  <!-- 要穴一覧 -->
+  <div class="yoken-section" id="yokenSection">
+
+    <div class="yoken-block">
+      <div class="yoken-title">五行穴（五兪穴）</div>
+      <div class="yoken-sub">陰経：木→火→土→金→水　／　陽経：金→水→木→火→土</div>
+
+      <div class="yoken-table-wrap">
+        <table class="yoken-table">
+          <thead>
+            <tr>
+              <th colspan="2">経脈</th>
+              <th><span class="gogyou ki">木</span><br>井穴</th>
+              <th><span class="gogyou hi">火</span><br>滎穴</th>
+              <th><span class="gogyou do">土</span><br>兪穴</th>
+              <th><span class="gogyou kin">金</span><br>経穴</th>
+              <th><span class="gogyou sui">水</span><br>合穴</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="in-kei"><td class="gogyo-cell ki">木</td><td>肝</td><td>大敦</td><td>行間</td><td class="yu-cell">太衝</td><td>中封</td><td>曲泉</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell hi">火</td><td>心</td><td>少衝</td><td>少府</td><td class="yu-cell">神門</td><td>霊道</td><td>少海</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell do">土</td><td>脾</td><td>隠白</td><td>大都</td><td class="yu-cell">太白</td><td>商丘</td><td>陰陵泉</td></tr>
+            <tr class="in-kei highlight-lu"><td class="gogyo-cell kin">金</td><td>肺</td><td>少商</td><td>魚際</td><td class="yu-cell">太淵</td><td>経渠</td><td>尺沢</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell sui">水</td><td>腎</td><td>湧泉</td><td>然谷</td><td class="yu-cell">太渓</td><td>復溜</td><td>陰谷</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell hi">火</td><td>心包</td><td>中衝</td><td>労宮</td><td class="yu-cell">大陵</td><td>間使</td><td>曲沢</td></tr>
+            <tr class="sep-row"><td colspan="7"></td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell ki">木</td><td>胆</td><td>足竅陰</td><td>侠渓</td><td class="yu-cell">足臨泣</td><td>陽輔</td><td>陽陵泉</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell hi">火</td><td>小腸</td><td>少沢</td><td>前谷</td><td class="yu-cell">後渓</td><td>陽谷</td><td>小海</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell do">土</td><td>胃</td><td>厲兌</td><td>内庭</td><td class="yu-cell">陥谷</td><td>解渓</td><td>足三里</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell kin">金</td><td>大腸</td><td>商陽</td><td>二間</td><td class="yu-cell">三間</td><td>陽渓</td><td>曲池</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell sui">水</td><td>膀胱</td><td>至陰</td><td>足通谷</td><td class="yu-cell">束骨</td><td>崑崙</td><td>委中</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell hi">火</td><td>三焦</td><td>関衝</td><td>液門</td><td class="yu-cell">中渚</td><td>支溝</td><td>天井</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yoken-note">※ 兪穴（土）は陰経の原穴を兼ねる</div>
+    </div>
+
+    <div class="yoken-block">
+      <div class="yoken-title">五要穴</div>
+
+      <div class="yoken-table-wrap">
+        <table class="yoken-table">
+          <thead>
+            <tr>
+              <th colspan="2">経脈</th>
+              <th>原穴</th>
+              <th>郄穴</th>
+              <th>絡穴</th>
+              <th>募穴</th>
+              <th>兪穴<br><span style="font-size:10px;font-weight:normal">（背部）</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="in-kei"><td class="gogyo-cell ki">木</td><td>肝</td><td>太衝</td><td>中都</td><td>蠡溝</td><td>期門（自）</td><td>肝兪</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell hi">火</td><td>心</td><td>神門</td><td>陰郄</td><td>通里</td><td>巨闕（任）</td><td>心兪</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell do">土</td><td>脾</td><td>太白</td><td>地機</td><td>公孫</td><td>章門（肝）</td><td>脾兪</td></tr>
+            <tr class="in-kei highlight-lu"><td class="gogyo-cell kin">金</td><td>肺</td><td>太淵</td><td>孔最</td><td>列缺</td><td>中府（自）</td><td>肺兪</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell sui">水</td><td>腎</td><td>太渓</td><td>水泉</td><td>大鍾</td><td>京門（胆）</td><td>腎兪</td></tr>
+            <tr class="in-kei"><td class="gogyo-cell hi">火</td><td>心包</td><td>大陵</td><td>郄門</td><td>内関</td><td>膻中（任）</td><td>厥陰兪</td></tr>
+            <tr class="sep-row"><td colspan="7"></td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell ki">木</td><td>胆</td><td>丘墟</td><td>外丘</td><td>光明</td><td>日月（自）</td><td>胆兪</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell hi">火</td><td>小腸</td><td>腕骨</td><td>養老</td><td>支正</td><td>関元（任）</td><td>小腸兪</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell do">土</td><td>胃</td><td>衝陽</td><td>梁丘</td><td>豊隆</td><td>中脘（任）</td><td>胃兪</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell kin">金</td><td>大腸</td><td>合谷</td><td>温溜</td><td>偏歴</td><td>天枢（胃）</td><td>大腸兪</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell sui">水</td><td>膀胱</td><td>京骨</td><td>金門</td><td>飛揚</td><td>中極（任）</td><td>膀胱兪</td></tr>
+            <tr class="yo-kei"><td class="gogyo-cell hi">火</td><td>三焦</td><td>陽池</td><td>会宗</td><td>外関</td><td>石門（任）</td><td>三焦兪</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yoken-note">※ 肺経の行はハイライト　／　募穴の（）内は所属経脈：自=自経、任=任脈、それ以外は他経</div>
+    </div>
+
+    <!-- 八会穴 -->
+    <div class="yoken-block">
+      <div class="yoken-title">八会穴</div>
+      <div class="yoken-sub">気・血・筋・脈・骨・髄・臓・腑のそれぞれの会穴</div>
+      <div class="yoken-table-wrap">
+        <table class="yoken-table">
+          <thead>
+            <tr><th>会</th><th>穴名</th><th>経脈</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-lu"><td>脈の会</td><td><strong>太淵</strong></td><td>肺経 LU-9</td></tr>
+            <tr><td>気の会</td><td>膻中</td><td>任脈 CV-17</td></tr>
+            <tr><td>血の会</td><td>膈兪</td><td>膀胱経 BL-17</td></tr>
+            <tr><td>筋の会</td><td>陽陵泉</td><td>胆経 GB-34</td></tr>
+            <tr><td>骨の会</td><td>大杼</td><td>膀胱経 BL-11</td></tr>
+            <tr><td>髄の会</td><td>懸鐘</td><td>胆経 GB-39</td></tr>
+            <tr><td>臓の会</td><td>章門</td><td>肝経 LR-13</td></tr>
+            <tr><td>腑の会</td><td>中脘</td><td>任脈 CV-12</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yoken-note">※ 肺経の太淵（LU-9）は脈の会を兼ねる</div>
+    </div>
+
+    <!-- 四総穴 -->
+    <div class="yoken-block">
+      <div class="yoken-title">四総穴</div>
+      <div class="yoken-sub">「肚腹三里留、腰背委中求、頭項列缺尋、面口合谷収」</div>
+      <div class="yoken-table-wrap">
+        <table class="yoken-table">
+          <thead>
+            <tr><th>主治部位</th><th>穴名</th><th>経脈</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>肚腹（腹部）</td><td>足三里</td><td>胃経 ST-36</td></tr>
+            <tr><td>腰背</td><td>委中</td><td>膀胱経 BL-40</td></tr>
+            <tr class="highlight-lu"><td>頭項（頭・頸部）</td><td><strong>列缺</strong></td><td>肺経 LU-7</td></tr>
+            <tr><td>面口（顔・口）</td><td>合谷</td><td>大腸経 LI-4</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yoken-note">※ 肺経の列缺（LU-7）は頭項の四総穴を兼ねる</div>
+    </div>
+
+    <!-- 奇経の絡穴 -->
+    <div class="yoken-block">
+      <div class="yoken-title">奇経の絡穴・大絡</div>
+      <div class="yoken-table-wrap">
+        <table class="yoken-table">
+          <thead>
+            <tr><th>経脈</th><th>絡穴</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>督脈</td><td>長強</td></tr>
+            <tr><td>任脈</td><td>鳩尾</td></tr>
+            <tr><td>脾の大絡</td><td>大包</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yoken-note">※ 督脈・任脈・脾の大絡を合わせて「十五絡穴」とする説もある</div>
+    </div>
+
+    <!-- 八脈交会穴 -->
+    <div class="yoken-block">
+      <div class="yoken-title">八脈交会穴</div>
+      <div class="yoken-sub">十二経と奇経八脈が交わる8つの要穴</div>
+      <div class="yoken-table-wrap">
+        <table class="yoken-table">
+          <thead>
+            <tr><th>穴名</th><th>経脈</th><th>通じる奇経</th><th>主治領域</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-lu"><td><strong>列缺</strong></td><td>肺経 LU-7</td><td>任脈</td><td>胸・肺・咽・横隔膜</td></tr>
+            <tr><td>後渓</td><td>小腸経 SI-3</td><td>督脈</td><td>目内眦・頸・耳・肩</td></tr>
+            <tr><td>内関</td><td>心包経 PC-6</td><td>陰維脈</td><td>心・胸・胃</td></tr>
+            <tr><td>公孫</td><td>脾経 SP-4</td><td>衝脈</td><td>心・胸・胃</td></tr>
+            <tr><td>外関</td><td>三焦経 TE-5</td><td>陽維脈</td><td>目外眦・頬・耳後・肩</td></tr>
+            <tr><td>足臨泣</td><td>胆経 GB-41</td><td>帯脈</td><td>目外眦・頬・耳後・肩</td></tr>
+            <tr><td>申脈</td><td>膀胱経 BL-62</td><td>陽蹻脈</td><td>目内眦・頸・耳・肩</td></tr>
+            <tr><td>照海</td><td>腎経 KI-6</td><td>陰蹻脈</td><td>胸・肺・咽・横隔膜</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="yoken-note">※ 列缺（LU-7）と照海（KI-6）はペアで使用（任脈・陰蹻脈）　／　奇経の郄穴：陰蹻=交信、陽蹻=附陽、陰維=築賓、陽維=陽交</div>
+    </div>
+
+  </div>
+
   <div class="affiliate-bar">
     <div class="affiliate-icon">📖</div>
     <div class="affiliate-text">
@@ -844,18 +1048,13 @@
     <a class="affiliate-btn" href="https://amzn.to/4dlDrlb" target="_blank" rel="noopener">Amazon で見る</a>
   </div>
 
-  <div class="affiliate-bar" style="margin-top: 10px;">
-    <div class="affiliate-icon">🗺️</div>
-    <div class="affiliate-text">
-      <div class="affiliate-title">十四経絡交会図ポスター</div>
-      <div class="affiliate-sub">経絡の流注を一枚で視覚的に確認。壁に貼って毎日の学習を補完。</div>
-    </div>
-    <a class="affiliate-btn" href="https://amzn.to/48GNI94" target="_blank" rel="noopener">Amazon で見る</a>
-  </div>
-
 </div>
 
 <script>
+const MERIDIAN_RYUCHU = {
+  LU: "手の太陰肺経は、中焦に起こり、下って大腸を絡い、かえりて噴門部をめぐり、横隔膜を貫いて肺に属する。肺から気管・喉頭をめぐって腋下に出て、上腕前外側、肘窩〔尺沢〕、前腕前外側、手関節前面横紋外端の橈骨動脈拍動部〔太淵〕、母指球外側を経て、母指外側端に終わる。\n前腕下部〔列缺〕より分かれた支脈が、示指外側端に至り、手の陽明大腸経につながる。"
+};
+
 const ACUPOINTS = [
   {
     id: "LU1", code: "LU-1", name: "中府", reading: "ちゅうふ",
@@ -1210,6 +1409,7 @@ function renderCard() {
 
   document.getElementById('cardMeridian').textContent = p.meridian + ' · ' + p.meridianEn;
   document.getElementById('cardCode').textContent = p.code;
+  document.getElementById('cardRyuchu').textContent = MERIDIAN_RYUCHU[p.meridianCode] || '';
   document.getElementById('cardName').textContent = p.name;
   document.getElementById('cardReading').textContent = p.reading;
   document.getElementById('quickLocation').textContent = p.locationShort;
@@ -1359,10 +1559,15 @@ function updateStats() {
 
 function switchMode(mode) {
   document.querySelectorAll('.mode-tab').forEach((t, i) => {
-    t.classList.toggle('active', (i === 0 && mode === 'flash') || (i === 1 && mode === 'quiz'));
+    t.classList.toggle('active',
+      (i === 0 && mode === 'flash') ||
+      (i === 1 && mode === 'quiz') ||
+      (i === 2 && mode === 'yoken')
+    );
   });
-  document.getElementById('flashSection').classList.toggle('hidden', mode === 'quiz');
+  document.getElementById('flashSection').classList.toggle('hidden', mode !== 'flash');
   document.getElementById('quizSection').classList.toggle('visible', mode === 'quiz');
+  document.getElementById('yokenSection').classList.toggle('visible', mode === 'yoken');
   if (mode === 'quiz') renderQuestion();
 }
 
